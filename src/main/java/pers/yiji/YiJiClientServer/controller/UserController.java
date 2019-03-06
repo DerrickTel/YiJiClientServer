@@ -25,7 +25,8 @@ public class UserController {
     }
 
     @PostMapping(value="/")
-    public String postUser(@Valid User user, BindingResult result) {
+    @ResponseBody
+    public String postUser(@RequestBody User user, BindingResult result) {
         // 处理"/users/"的POST请求，用来创建User
         // 除了@ModelAttribute绑定参数之外，还可以通过@RequestParam从页面中传递参数
         userMapper.insert(user.getName(), user.getPwd(), user.getAge());
