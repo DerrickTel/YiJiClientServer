@@ -1,5 +1,7 @@
 package pers.yiji.YiJiClientServer.model;
 
+import javax.validation.constraints.Size;
+
 public class User {
 
     private Long id;
@@ -23,6 +25,7 @@ public class User {
         this.name = name;
     }
 
+    @Size(min=6,max=18,message="密码的长度应该在6和18之间")
     public String getPwd() {
         return pwd;
     }
