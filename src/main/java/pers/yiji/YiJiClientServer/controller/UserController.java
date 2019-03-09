@@ -15,7 +15,7 @@ import java.util.*;
 import static pers.yiji.YiJiClientServer.util.Utils.md5;
 
 @RestController
-@RequestMapping(value="/users")     // 通过这里配置使下面的映射都在/users下
+@RequestMapping(value="/user")     // 通过这里配置使下面的映射都在/user下
 public class UserController {
 
     @SuppressWarnings("all")
@@ -29,6 +29,7 @@ public class UserController {
         return new ArrayList<>(userMapper.findAll());
     }
 
+    @CrossOrigin
     @PostMapping(value="/login")
     public Map<String, Object> UserLogin(@RequestBody Map<String, Object> getObject) {
         Map<String, Object> retMap = new HashMap<>();
@@ -38,6 +39,7 @@ public class UserController {
         if(loginUser == null){
             retMap.put("errorCode", MessageCode.PARAM_ERROR);
             retMap.put("msg", "账号不存在");
+            return retMap;
         } else {
             if( !loginUser.getPwd().equals( md5(userNameKey) ) ) {
                 retMap.put("errorCode", MessageCode.PARAM_ERROR);
@@ -49,7 +51,7 @@ public class UserController {
         return retMap;
     }
 
-    @PostMapping(value="/login")
+    @PostMapping(value="/add")
     public Map<String, Object> addUser(@Valid @RequestBody User user, BindingResult result) {
         // 处理"/users/"的POST请求，用来创建User
         // 除了@ModelAttribute绑定参数之外，还可以通过@RequestParam从页面中传递参数
@@ -60,8 +62,11 @@ public class UserController {
                 retMap.put("errorMsg", item.getDefaultMessage());
             });
             retMap.put("errorCode", MessageCode.PARAM_ERROR);
+            return retMap;
         }
-        userMapper.insert(user.getName(), md5( user.getPwd() ), user.getAge());
+        userMapper.insert( user.getName(), md5( user.getPwd() ), user.getAge());
+        retMap.put("errorCode", MessageCode.SUCCESS);
+        retMap.put("errorMsg", "创建成功");
         return retMap;
     }
 //
