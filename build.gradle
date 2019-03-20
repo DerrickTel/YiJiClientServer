@@ -30,4 +30,5 @@ dependencies {
 	compile('mysql:mysql-connector-java')
 	testImplementation('org.springframework.boot:spring-boot-starter-test')
 	compile group: 'org.json', name: 'json', version: '20180130'
+	implementation 'com.auth0:java-jwt:3.8.0'
 }

@@ -1,5 +1,6 @@
 package pers.yiji.YiJiClientServer.controller;
 
+import com.mysql.jdbc.StringUtils;
 import org.springframework.validation.ObjectError;
 import pers.yiji.YiJiClientServer.dao.UserMapper;
 import pers.yiji.YiJiClientServer.model.User;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import pers.yiji.YiJiClientServer.util.MessageCode;
+import pers.yiji.YiJiClientServer.util.TokenConfig;
 import pers.yiji.YiJiClientServer.util.Utils;
 
 import javax.validation.Valid;
@@ -29,12 +31,19 @@ public class UserController {
         return new ArrayList<>(userMapper.findAll());
     }
 
-    @CrossOrigin
     @PostMapping(value="/login")
-    public Map<String, Object> UserLogin(@RequestBody Map<String, Object> getObject) {
+    public Map<String, Object> UserLogin(@RequestBody Map<String, Object> getObject) throws Exception {
+
         Map<String, Object> retMap = new HashMap<>();
-        String userName = (String) getObject.get("userName");
-        String userNameKey = (String) getObject.get("userNameKey");
+        String userName = "";
+        String userNameKey = "";
+        if( !StringUtils.isNullOrEmpty( (String) getObject.get("userName") ) ){
+            userName = (String) getObject.get("userName");
+        }
+        if( !StringUtils.isNullOrEmpty( (String) getObject.get("userNameKey") ) ){
+            userNameKey = (String) getObject.get("userNameKey");
+        }
+
         User loginUser = userMapper.findByName(userName);
         if(loginUser == null){
             retMap.put("errorCode", MessageCode.PARAM_ERROR);
@@ -46,6 +55,8 @@ public class UserController {
                 retMap.put("msg", "密码错误");
             }
         }
+        String retToken = TokenConfig.createToken( loginUser.getId() );
+        retMap.put("token", retToken);
         retMap.put("errorCode", MessageCode.SUCCESS);
         retMap.put("msg", "");
         return retMap;
